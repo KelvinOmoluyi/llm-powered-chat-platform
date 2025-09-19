@@ -1,0 +1,251 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+:root {
+  /* color-scheme: light dark; */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* color-scheme: light dark; */
+
+  --text-gradient-01: linear-gradient(90deg, #c7c72a, white, #c7c72a);
+}
+
+span.text-gradient-01 {
+  background: var(--text-gradient-01);
+  color: transparent;
+  font-size: 1em;
+  -webkit-background-clip: text;
+          background-clip: text;
+}
+
+body {
+  height: 100vh;
+  background-color: #fafafc;
+  color: #777;
+  display: flex;
+}
+
+h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 3rem;
+  font-weight: 600;
+}
+
+h4 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #c9c9c9;
+}
+
+h5 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.2rem;
+  line-height: 1.3rem;
+  font-weight: 600;
+  color: #c9c9c9;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+  font-weight: 200;
+  font-size: 14px;
+}
+
+h6 {
+  margin: 0;
+  padding: 0;
+  font-weight: 200;
+  font-size: 14px;
+  line-height: 16px;
+  color: #8b8b8b;
+}
+
+input {
+  border: none;
+  outline: 0;
+  height: 24px;
+  color: #afafaf;
+  font-size: 15px;
+}
+
+input::-webkit-input-placeholder {
+  color: #4d4d4d;
+}
+
+input::-moz-placeholder {
+  color: #4d4d4d;
+}
+
+input:-ms-input-placeholder {
+  color: #4d4d4d;
+}
+
+input::-ms-input-placeholder {
+  color: #4d4d4d;
+}
+
+input::placeholder {
+  color: #4d4d4d;
+}
+
+.input-board {
+  padding: 30px;
+  margin-top: 40px;
+}
+
+.base {
+  background-color: #070603ff;
+  position: relative;
+  z-index: 1;
+  background-image: url(../public/images/grid3.png);
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.base::before {
+  content: '';
+  background-color: #070603ff;
+  position: absolute;
+  height: 250px;
+  width: 250px;
+  background-color: #433800e8;
+  bottom: -100px;
+  left: 120px;
+  z-index: 4;
+  border-radius: 50%;
+  box-shadow: 0 0 180px 200px #433800e8;
+}
+
+.base::after {
+  content: '';
+  background-color: #070603ff;
+  position: absolute;
+  height: 160px;
+  width: 160px;
+  background-color: #443901d5;
+  top: -80px;
+  right: -80px;
+  z-index: 2;
+  border-radius: 50%;
+  box-shadow: 0 0 150px 150px #433800d7;
+}
+
+.sidebar {
+  background-color: rgba(29, 29, 29, 0.548);
+  -webkit-backdrop-filter: blur(50px);
+          backdrop-filter: blur(50px);
+  border-top-right-radius: 40px;
+  border-bottom-right-radius: 50px;
+}
+
+/* .chat {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+} */
+
+.search-result {
+  margin-top: 10px;
+  overflow: scroll;
+}
+
+.surprise {
+  background-color: #ececf1;
+  color: #000;
+  border-radius: 5px;
+  font-weight: 600;
+  padding: 4px 12px;
+  margin: 0 0 2px 5px;
+  border: none;
+}
+
+.input-container {
+  width: 100%;
+  border: solid 0.5px #cacaca;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,82, 0.15);
+  display: flex;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.input-container input {
+  border: none;
+  padding: 13px 14px;
+  font-size: 15px;
+  outline: none;
+  width: 90%;
+  font-weight: 200;
+  border-radius: 8px;
+}
+
+.input-container input::-webkit-input-placeholder {
+  color: #cacaca;
+  font-weight: 200;
+}
+
+.input-container input::-moz-placeholder {
+  color: #cacaca;
+  font-weight: 200;
+}
+
+.input-container input:-ms-input-placeholder {
+  color: #cacaca;
+  font-weight: 200;
+}
+
+.input-container input::-ms-input-placeholder {
+  color: #cacaca;
+  font-weight: 200;
+}
+
+.input-container input::placeholder {
+  color: #cacaca;
+  font-weight: 200;
+}
+
+.input-container button {
+  min-width: 10%;
+  border: none;
+  border-left: 1px solid #cacaca;
+  background-color: #fff;
+  color: #777;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.input-container button:active {
+  background-color: #cacaca;
+}
+
+.answer {
+  padding: 13px 14px;
+  border: 0.5px solid #cacaca;
+  background-color: #fff;
+  margin: 5px;
+  font-size: 15px;
+  font-weight: 200;
+  border-radius: 6px;
+}
+
+
+.app { max-width: 760px; margin: 2rem auto; font-family: system-ui, sans-serif; }
+.input-container { display: flex; gap: .5rem; }
+.input-container input { flex: 1; padding: .75rem; }
+.search-result { margin-top: 1rem; display: grid; gap: .5rem; }
+.msg.user { background: #111; color: #fff; padding: .75rem; border-radius: .5rem; }
+.msg.model { background: #f7f7f7; padding: .75rem; border-radius: .5rem; }
+.error { color: #b00020; }
