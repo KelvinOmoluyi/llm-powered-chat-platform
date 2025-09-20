@@ -66,7 +66,7 @@ export default function Chat() {
     setValue("");
 
     try {
-      const res = await fetch("http://localhost:8000/gemini", {
+      const res = await fetch("https://llm-powered-chat-platform.vercel.app/gemini", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ history: historyForAPI, message: value }),
