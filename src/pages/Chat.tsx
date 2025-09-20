@@ -82,36 +82,81 @@ export default function Chat() {
       const decoder = new TextDecoder();
 
       let assistant = "";
-      // Stream SSE lines
-      while (true) {
-        const { value: chunk, done } = await reader.read();
-        if (done) break;
-        const text = decoder.decode(chunk, { stream: true });
+    let buffer = ""; // keep partial SSE lines here
 
-        for (const line of text.split("\n\n")) {
-          const trimmed = line.trim();
-          if (!trimmed.startsWith("data:")) continue;
-          const payload = JSON.parse(trimmed.slice(5).trim());
+    while (true) {
+      const { value: chunk, done } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(chunk, { stream: true });
+
+      // Process complete SSE events
+      let boundary;
+      while ((boundary = buffer.indexOf("\n\n")) !== -1) {
+        const rawEvent = buffer.slice(0, boundary).trim();
+        buffer = buffer.slice(boundary + 2);
+
+        if (!rawEvent.startsWith("data:")) continue;
+
+        try {
+          const payload = JSON.parse(rawEvent.slice(5).trim());
 
           if (payload.delta) {
             assistant += payload.delta;
-            // Update just the last assistant message
-            setChatHistory((prev) => {
+            setChatHistory(prev => {
               const copy = [...prev];
               const lastIdx = copy.length - 1;
-              copy[lastIdx] = {
-                role: "model",
-                text: assistant,
-                parts: [{ text: assistant }],
-              };
+              if (lastIdx >= 0) {
+                copy[lastIdx] = {
+                  role: "model",
+                  text: assistant,
+                  parts: [{ text: assistant }],
+                };
+              }
               return copy;
             });
           }
+
           if (payload.error) {
             setError(payload.error);
+            // Optionally update assistant bubble with error message
+            setChatHistory(prev => {
+              const copy = [...prev];
+              const lastIdx = copy.length - 1;
+              if (lastIdx >= 0) {
+                copy[lastIdx] = {
+                  role: "model",
+                  text: `(Error: ${payload.error})`,
+                  parts: [{ text: `(Error: ${payload.error})` }],
+                };
+              }
+              return copy;
+            });
           }
+
+          if (payload.done) {
+            // If assistant never got tokens, put a fallback
+            if (!assistant.trim()) {
+              setChatHistory(prev => {
+                const copy = [...prev];
+                const lastIdx = copy.length - 1;
+                if (lastIdx >= 0) {
+                  copy[lastIdx] = {
+                    role: "model",
+                    text: "⚠️ I wasn’t able to provide an answer.",
+                    parts: [{ text: "⚠️ I wasn’t able to provide an answer." }],
+                  };
+                }
+                return copy;
+              });
+            }
+            return; // exit streaming loop
+          }
+        } catch (err) {
+          console.error("Failed to parse SSE event:", rawEvent, err);
         }
       }
+    }
     } catch (e) {
       console.error(e);
       setError("Something went wrong. Try again.");
