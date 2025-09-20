@@ -17,6 +17,9 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEN_AI_KEY)
 app.post("/gemini", async (req, res) => {
   const { history = [], message } = req.body;
 
+  console.log("HISTORY", history);
+  console.log("MESSAGE", message);
+
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   const chat = model.startChat({ history, generationConfig: { maxOutputTokens: 100 } });
 
