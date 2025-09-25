@@ -1,5 +1,5 @@
 // App.tsx
-import { useRef, useState } from "react";
+import { useState } from "react";
 import type { suggestedPrompt } from "../../types";
 import icon from "../../public/images/orb.png"
 import { TbTruckDelivery } from "../assests";
