@@ -1,5 +1,5 @@
 // App.tsx
-import { useRef, useState } from "react";
+import { useState } from "react";
 import type { suggestedPrompt } from "../../types";
 import icon from "../../public/images/orb.png"
 import { TbTruckDelivery } from "../assests";
@@ -18,7 +18,7 @@ export default function Chat() {
   const [chatHistory, setChatHistory] = useState<ChatTurn[]>([]);
   const [loading, setLoading] = useState(false);
   const [chatMode, setChatMode] = useState(false);
-  const controllerRef = useRef<AbortController | null>(null);
+  // const controllerRef = useRef<AbortController | null>(null);
 
   const suggestedPrompts: suggestedPrompt[] = [
     {
@@ -42,124 +42,38 @@ export default function Chat() {
   ]
 
   async function ask() {
-    if (!value.trim()) {
-      setError("Please ask a question.");
-      return;
-    }
-    setError("");
-    setLoading(true);
-    controllerRef.current?.abort();
-    controllerRef.current = new AbortController();
+    if (!value) {
+       setError("Error, please ask a question") 
+       return 
+    } 
+    try { 
+      const options = { 
+        method: 'POST', 
+        body: JSON.stringify({ history: chatHistory.map(msg => ({ 
+          role: msg.role, parts: [{ text: msg.text }] // ✅ Correct format 
+        })), message: value }), 
+        headers: { 
+          'Content-Type': "application/json"
+         } 
+      } 
+      const response = await fetch('https://ai-power-chat-platform-backend.onrender.com/gemini', options); 
+      
+      let data = await response.text() 
 
-    // Prepare history in Gemini’s expected shape
-    const historyForAPI = chatHistory.map((t) => ({
-      role: t.role,
-      parts: [{ text: t.text }],
-    }));
+      if (!chatMode) setChatMode(true);
 
-    // Optimistic add of the user turn + a placeholder assistant turn
-    setChatHistory((prev) => [
-      ...prev,
-      { role: "user", text: value, parts: [{ text: value }] },
-      { role: "model", text: "", parts: [{ text: "" }] },
-    ]);
-    setValue("");
+      console.log(data) 
+      setChatHistory(prev => 
+        [ ...prev, 
+          { role: "user", text: value, 
+            parts: [{ text: value }] }, 
+          { role: "model", text: data, 
+            parts: [{ text: data }] } ]); 
+      setValue("") 
+    } catch(error) { 
+      console.log(error) 
+      setError("Something went wrong, please try again later.") 
 
-    try {
-      const res = await fetch("https://llm-powered-chat-platform.vercel.app/gemini", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ history: historyForAPI, message: value }),
-        signal: controllerRef.current.signal,
-      });
-
-      if (!res.ok || !res.body) {
-        throw new Error("Network error");
-      }
-      if (res.body) setChatMode(true);
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-
-      let assistant = "";
-    let buffer = ""; // keep partial SSE lines here
-
-    while (true) {
-      const { value: chunk, done } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(chunk, { stream: true });
-
-      // Process complete SSE events
-      let boundary;
-      while ((boundary = buffer.indexOf("\n\n")) !== -1) {
-        const rawEvent = buffer.slice(0, boundary).trim();
-        buffer = buffer.slice(boundary + 2);
-
-        if (!rawEvent.startsWith("data:")) continue;
-
-        try {
-          const payload = JSON.parse(rawEvent.slice(5).trim());
-
-          if (payload.delta) {
-            assistant += payload.delta;
-            setChatHistory(prev => {
-              const copy = [...prev];
-              const lastIdx = copy.length - 1;
-              if (lastIdx >= 0) {
-                copy[lastIdx] = {
-                  role: "model",
-                  text: assistant,
-                  parts: [{ text: assistant }],
-                };
-              }
-              return copy;
-            });
-          }
-
-          if (payload.error) {
-            setError(payload.error);
-            // Optionally update assistant bubble with error message
-            setChatHistory(prev => {
-              const copy = [...prev];
-              const lastIdx = copy.length - 1;
-              if (lastIdx >= 0) {
-                copy[lastIdx] = {
-                  role: "model",
-                  text: `(Error: ${payload.error})`,
-                  parts: [{ text: `(Error: ${payload.error})` }],
-                };
-              }
-              return copy;
-            });
-          }
-
-          if (payload.done) {
-            // If assistant never got tokens, put a fallback
-            if (!assistant.trim()) {
-              setChatHistory(prev => {
-                const copy = [...prev];
-                const lastIdx = copy.length - 1;
-                if (lastIdx >= 0) {
-                  copy[lastIdx] = {
-                    role: "model",
-                    text: "⚠️ I wasn’t able to provide an answer.",
-                    parts: [{ text: "⚠️ I wasn’t able to provide an answer." }],
-                  };
-                }
-                return copy;
-              });
-            }
-            return; // exit streaming loop
-          }
-        } catch (err) {
-          console.error("Failed to parse SSE event:", rawEvent, err);
-        }
-      }
-    }
-    } catch (e) {
-      console.error(e);
-      setError("Something went wrong. Try again.");
     } finally {
       setLoading(false);
     }
