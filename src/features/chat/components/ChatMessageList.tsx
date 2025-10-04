@@ -11,8 +11,8 @@ export type ChatMessageListProps = {
 };
 
 const ChatMessageList = ({ messages, messageVariants, loading, messagesEndRef }: ChatMessageListProps) => (
-  <div className="chat-scroll flex-1 overflow-y-auto px-1 sm:px-3">
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 pb-4">
+  <div className="chat-scroll flex-1 overflow-y-auto px-1 sm:px-3 scrollbar-hide">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 pb-4 ">
       <AnimatePresence initial={false}>
         {messages.map((message) => {
           const isModel = message.role === "model";
