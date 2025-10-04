@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import type { suggestedPrompt } from "../../../types";
 import { easeOutExpo } from "../../../shared/animation/easings";
-import icon from "../../../../public/images/orb.png";
 
 export type ChatHeroProps = {
   username: string;
@@ -21,7 +20,7 @@ const ChatHero = ({ username, prompts, insertPrompt, shouldReduceMotion }: ChatH
   >
     <div className="hero-scroll flex w-full max-w-4xl flex-1 flex-col items-center px-4 py-10 sm:py-12">
       <motion.img
-        src={icon}
+        src="/images/orb.png"
         width={140}
         height={140}
         alt="App icon"
@@ -83,3 +82,4 @@ const ChatHero = ({ username, prompts, insertPrompt, shouldReduceMotion }: ChatH
 );
 
 export default ChatHero;
+

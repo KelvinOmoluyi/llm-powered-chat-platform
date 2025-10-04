@@ -82,7 +82,7 @@ input::placeholder {
   background-color: #070603ff;
   position: relative;
   z-index: 1;
-  background-image: url(../public/images/grid3.png);
+  background-image: url(/images/grid3.png);
   background-size: cover;
   background-position: center;
   overflow: hidden;
@@ -494,3 +494,4 @@ input::placeholder {
     display: none;
   }
 }
+
